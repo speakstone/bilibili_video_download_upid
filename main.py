@@ -21,6 +21,8 @@ class bilidowload_upid():
 
     def __init__(self):
         self.save_path = "../bili_results/"  # 视频下载存放位置
+        if not os.path.isdir(self.save_path):
+            os.mkdir(self.save_path)
         self.user_agent_list = []
         self.tasks = []
         self.quality = 16  # 1080p:80;720p:64;480p:32;360p:16
@@ -80,7 +82,10 @@ class bilidowload_upid():
             start_url = self.start_url + "/?p=" + page
             video_list = get_play_list(start_url, cid, self.quality)
             start_time = time.time()
-            self.bilitools.down_video(video_list, title, start_url, page, self.save_path)
+            save_dir = os.path.join(self.save_path, self.params['mid'])
+            if not os.path.isdir(save_dir):
+                os.mkdir(save_dir)
+            self.bilitools.down_video(video_list, title, start_url, page, save_dir)
         #     # 定义线程
         #     th = threading.Thread(target=self.bilitools.down_video, args=(video_list, title, start_url, page, self.save_path))
         #     # 将线程加入线程池
