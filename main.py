@@ -69,7 +69,6 @@ class bilidowload_upid():
     def download_cid(self, cid_list):
         start_time = time.time()
         # 创建线程池
-        threadpool = []
         title_list = []
         for item in cid_list:
             cid = str(item['cid'])
@@ -108,8 +107,8 @@ class bilidowload_upid():
         """
         self.heards['user-agent'] = get_random_agent()
         self.params['mid'] = usid
-        last_page = self.getUpAllBvide()
         while True:
+            last_page = self.getUpAllBvide()
             vids = [[i["aid"], i["bvid"]] for i in self.tasks]
             for index, vid in enumerate(vids):
                 self.bilitools = tools()
@@ -119,7 +118,8 @@ class bilidowload_upid():
                 data = html['data']['pages']
                 self.download_cid(data)
                 time.sleep(random.random() + 2)
-            if last_page:
+                print(data)
+            if not last_page:
                 break
 
 
