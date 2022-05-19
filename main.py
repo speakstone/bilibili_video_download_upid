@@ -80,18 +80,18 @@ class bilidowload_upid():
             start_url = self.start_url + "/?p=" + page
             video_list = get_play_list(start_url, cid, self.quality)
             start_time = time.time()
-            # down_video(video_list, title, start_url, page)
-            # 定义线程
-            th = threading.Thread(target=self.bilitools.down_video, args=(video_list, title, start_url, page, self.save_path))
-            # 将线程加入线程池
-            threadpool.append(th)
-
-        # 开始线程
-        for th in threadpool:
-            th.start()
-        # 等待所有线程运行完毕
-        for th in threadpool:
-            th.join()
+            self.bilitools.down_video(video_list, title, start_url, page, self.save_path)
+        #     # 定义线程
+        #     th = threading.Thread(target=self.bilitools.down_video, args=(video_list, title, start_url, page, self.save_path))
+        #     # 将线程加入线程池
+        #     threadpool.append(th)
+        #
+        # # 开始线程
+        # for th in threadpool:
+        #     th.start()
+        # # 等待所有线程运行完毕
+        # for th in threadpool:
+        #     th.join()
         end_time = time.time()  # 结束时间
         print('下载总耗时%.2f秒,约%.2f分钟' % (end_time - start_time, int(end_time - start_time) / 60))
 
