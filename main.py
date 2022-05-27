@@ -35,12 +35,12 @@ class bilidowload_upid():
     根据up猪id进行批量下载
     """
 
-    def __init__(self):
-        self.save_path = "../bili_results/"  # 视频下载存放位置
+    def __init__(self,save_path = "bili_results/", quality = 32):
+        self.save_path = save_path  # 视频下载存放位置
         if not os.path.isdir(self.save_path):
             os.mkdir(self.save_path)
         self.tasks = []
-        self.quality = 16  # 1080p:80;720p:64;480p:32;360p:16
+        self.quality = quality  # 1080p:80;720p:64;480p:32;360p:16
         self.heards = {'accept': 'application/json, text/plain, */*',
                        'accept-encoding': 'utf-8',
                        'accept-language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7,mn;q=0.6,en-GB;q=0.5',
@@ -129,16 +129,16 @@ class bilidowload_upid():
             last_page = self.getUpAllBvide()
             vids = [[i["aid"], i["bvid"]] for i in self.tasks]
             for index, vid in enumerate(vids):
-                try:
-                    self.bilitools = tools()
-                    avid = vid[0]
-                    self.start_url = 'https://api.bilibili.com/x/web-interface/view?aid={}'.format(avid)
-                    html = requests.get(self.start_url, headers={'User-Agent':  get_random_agent()}).json()
-                    data = html['data']['pages']
-                    self.download_cid(data)
-                    time.sleep(random.random() + random.randint(3, 10))
-                except:
-                    print("download {} failed".format(avid))
+                # try:
+                self.bilitools = tools()
+                avid = vid[0]
+                self.start_url = 'https://api.bilibili.com/x/web-interface/view?aid={}'.format(avid)
+                html = requests.get(self.start_url, headers={'User-Agent':  get_random_agent()}).json()
+                data = html['data']['pages']
+                self.download_cid(data)
+                time.sleep(random.random() + random.randint(3, 10))
+                # except:
+                #     print("download {} failed".format(avid))
                 # print(data)
             if not last_page:
                 tarDir(os.path.join(self.save_path, str(usid)) + '.tar.gz', self.save_path)
@@ -146,7 +146,11 @@ class bilidowload_upid():
 
 
 if __name__ == "__main__":
-    main = bilidowload_upid()
+    save_path = "bili_results/"
+    # 1080p:80;720p:64;480p:32;360p:16
+    quality = 32
+    main = bilidowload_upid(save_path, quality)
+    # 添加up主id list
     usid_list = []
     if len(usid_list) == 0:
         usid = input('请输入您要下载的B站up猪的id:')
