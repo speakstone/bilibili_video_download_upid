@@ -39,7 +39,6 @@ class bilidowload_upid():
         self.save_path = "../bili_results/"  # 视频下载存放位置
         if not os.path.isdir(self.save_path):
             os.mkdir(self.save_path)
-        self.user_agent_list = []
         self.tasks = []
         self.quality = 16  # 1080p:80;720p:64;480p:32;360p:16
         self.heards = {'accept': 'application/json, text/plain, */*',
