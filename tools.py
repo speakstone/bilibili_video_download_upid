@@ -128,6 +128,9 @@ class tools():
         currentVideoPath = os.path.join(save_path, title)  # 当前目录作为下载目录
         if not os.path.exists(currentVideoPath):
             os.makedirs(currentVideoPath)
+        else:
+            print('文件夹{}已经存在，跳过此视频下载'.format(save_path))
+            return False
         for i in video_list:
             opener = urllib.request.build_opener()
             # 请求头
