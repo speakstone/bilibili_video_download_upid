@@ -1,10 +1,14 @@
 # bilibili_video_download_upid
 bilibili批量下载，用于根据UP主的id下载其所有视频
-
-#在main 154行 中添加usid_list = [], 代表up猪的id
-#否则在命令行中输入id也可实现单up猪的爬取
-
+# 环境配置
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+# 修改存储地址 main.py 136
+save_path = "bili_results/"
+# 修改下载分辨率 main.py 138， 1080p:80;720p:64;480p:32;360p:16
+quality = 32
+# 在main 154行 中添加id list, *代表up猪的id.或者直接执行main.py
+usid_list = [*,*,*]
+
 # 执行命令
 python3 main.py
 
@@ -12,3 +16,4 @@ python3 main.py
 pyton3
 import imageio
 imageio.plugins.ffmpeg.download()
+

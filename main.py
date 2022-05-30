@@ -91,8 +91,6 @@ class bilidowload_upid():
             cid = str(item['cid'])
             title = item['part']
             title = re.sub(r'[\/\\:*?"<>|]', '', title)  # 替换为空的
-            # print('[下载视频的cid]:' + cid)
-            # print('[下载视频的标题]:' + title)
             title_list.append(title)
             page = str(item['page'])
             start_url = self.start_url + "/?p=" + page
@@ -102,17 +100,6 @@ class bilidowload_upid():
             if not os.path.isdir(save_dir):
                 os.mkdir(save_dir)
             self.bilitools.down_video(video_list, title, start_url, page, save_dir)
-        #     # 定义线程
-        #     th = threading.Thread(target=self.bilitools.down_video, args=(video_list, title, start_url, page, self.save_path))
-        #     # 将线程加入线程池
-        #     threadpool.append(th)
-        #
-        # # 开始线程
-        # for th in threadpool:
-        #     th.start()
-        # # 等待所有线程运行完毕
-        # for th in threadpool:
-        #     th.join()
         end_time = time.time()  # 结束时间
         print('下载总耗时%.2f秒,约%.2f分钟' % (end_time - start_time, int(end_time - start_time) / 60))
 
@@ -129,17 +116,17 @@ class bilidowload_upid():
             last_page = self.getUpAllBvide()
             vids = [[i["aid"], i["bvid"]] for i in self.tasks]
             for index, vid in enumerate(vids):
-                # try:
-                self.bilitools = tools()
-                avid = vid[0]
-                self.start_url = 'https://api.bilibili.com/x/web-interface/view?aid={}'.format(avid)
-                html = requests.get(self.start_url, headers={'User-Agent':  get_random_agent()}).json()
-                data = html['data']['pages']
-                self.download_cid(data)
-                time.sleep(random.random() + random.randint(3, 10))
-                # except:
-                #     print("download {} failed".format(avid))
-                # print(data)
+                try:
+                    self.bilitools = tools()
+                    avid = vid[0]
+                    self.start_url = 'https://api.bilibili.com/x/web-interface/view?aid={}'.format(avid)
+                    html = requests.get(self.start_url, headers={'User-Agent':  get_random_agent()}).json()
+                    data = html['data']['pages']
+                    self.download_cid(data)
+                    time.sleep(random.random() + random.randint(3, 10))
+                except:
+                    print("download {} failed".format(avid))
+                print(data)
             if not last_page:
                 tarDir(os.path.join(self.save_path, str(usid)) + '.tar.gz', self.save_path)
                 break
