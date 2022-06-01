@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5c2dc0e6-fe56-4721-8e51-c2517298ff0d" name="Default Changelist" comment="530 up">
-      <change afterPath="$PROJECT_DIR$/main_jbnum.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/upid_get_and_up.py" afterDir="false" />
+    <list default="true" id="5c2dc0e6-fe56-4721-8e51-c2517298ff0d" name="Default Changelist" comment="61 up">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/upid_get_and_up.py" beforeDir="false" afterPath="$PROJECT_DIR$/upid_get_and_up.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +93,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "/home/work/bilibili_video_download_upid",
+    "last_opened_file_path": "/home/work/up_id_keys_collect_web",
     "settings.editor.selected.configurable": "preferences.lookFeel"
   }
 }]]></component>
@@ -263,7 +262,14 @@
       <option name="project" value="LOCAL" />
       <updated>1653902353091</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="61 up">
+      <created>1654046958042</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1654046958042</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -310,7 +316,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="530 up" />
-    <option name="LAST_COMMIT_MESSAGE" value="530 up" />
+    <MESSAGE value="61 up" />
+    <option name="LAST_COMMIT_MESSAGE" value="61 up" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -322,7 +329,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/upid_get_and_up.py</url>
-          <line>38</line>
+          <line>37</line>
           <option name="timeStamp" value="14" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
