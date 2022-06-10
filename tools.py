@@ -12,6 +12,8 @@
 import requests, time, hashlib, urllib.request, re, json
 from moviepy.editor import *
 import os, sys, threading
+import ctypes
+import platform
 
 
 class BV_AV():
@@ -191,3 +193,15 @@ class tools():
             else:
                 # 视频只有一段则直接打印下载完成
                 print('[视频合并完成]:' + title)
+
+
+def get_free_space_mb(folder):
+  """ Return folder/drive free space (in bytes)
+  """
+  if platform.system() == 'Windows':
+    free_bytes = ctypes.c_ulonglong(0)
+    ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(folder), None, None, ctypes.pointer(free_bytes))
+    return free_bytes.value/1024/1024/1024
+  else:
+    st = os.statvfs(folder)
+    return st.f_bavail * st.f_frsize/1024/1024/1024

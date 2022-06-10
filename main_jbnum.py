@@ -89,18 +89,21 @@ class bilidowload_upid():
         # 创建线程池
         title_list = []
         for item in cid_list:
-            cid = str(item['cid'])
-            title = item['part']
-            title = re.sub(r'[\/\\:*?"<>|]', '', title)  # 替换为空的
-            title_list.append(title)
-            page = str(item['page'])
-            start_url = self.start_url + "/?p=" + page
-            video_list = get_play_list(start_url, cid, self.quality)
-            start_time = time.time()
-            save_dir = os.path.join(self.save_path, self.params['mid'])
-            if not os.path.isdir(save_dir):
-                os.mkdir(save_dir)
-            self.bilitools.down_video(video_list, title, start_url, page, save_dir)
+            try:
+                cid = str(item['cid'])
+                title = item['part']
+                title = re.sub(r'[\/\\:*?"<>|]', '', title)  # 替换为空的
+                title_list.append(title)
+                page = str(item['page'])
+                start_url = self.start_url + "/?p=" + page
+                video_list = get_play_list(start_url, cid, self.quality)
+                start_time = time.time()
+                save_dir = os.path.join(self.save_path, self.params['mid'])
+                if not os.path.isdir(save_dir):
+                    os.mkdir(save_dir)
+                self.bilitools.down_video(video_list, title, start_url, page, save_dir)
+            except:
+                continue
         end_time = time.time()  # 结束时间
         print('下载总耗时%.2f秒,约%.2f分钟' % (end_time - start_time, int(end_time - start_time) / 60))
 
@@ -114,6 +117,7 @@ class bilidowload_upid():
         self.params['mid'] = usid
         self.heards['referer'] = 'https://space.bilibili.com/{}/video'.format(usid)
         while True:
+
             last_page = self.getUpAllBvide()
             vids = [[i["aid"], i["bvid"]] for i in self.tasks]
             for index, vid in enumerate(vids):
@@ -132,6 +136,7 @@ class bilidowload_upid():
             if not last_page:
                 tarDir(os.path.join(self.save_path, str(usid)) + '.tar.gz', self.save_path)
                 break
+
 
 def download_with_jbnum(save_path, quality, usid):
     """

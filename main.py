@@ -125,6 +125,7 @@ class bilidowload_upid():
                     self.download_cid(data)
                     time.sleep(random.random() + random.randint(3, 10))
                 except:
+
                     print("download {} failed".format(avid))
                 print(data)
             if not last_page:
@@ -138,7 +139,7 @@ if __name__ == "__main__":
     quality = 32
     main = bilidowload_upid(save_path, quality)
     # 添加up主id list
-    usid_list = []
+    usid_list = [98627270]
     if len(usid_list) == 0:
         usid = input('请输入您要下载的B站up猪的id:')
         main.download_usid(str(usid))
