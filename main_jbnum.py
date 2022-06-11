@@ -157,9 +157,14 @@ def download_with_jbnum(save_path, quality, usid):
     else:
         # 本地下载状态校验
         with open("state.txt", "r", encoding="utf-8") as f:
-            f_line = f.readlines()[0]
-            nid, state = f_line.strip().split(",")
-            state = int(state)
+            f_line = f.readlines()
+            if len(f_line) == 0:
+                nid = 0
+                state = 0
+            else:
+                f_line = f_line[0]
+                nid, state = f_line.strip().split(",")
+                state = int(state)
     if not nid or state:
         # 如果本地结束或者未开始，获取新的up主id
         nid = up_main.get_new_id()
