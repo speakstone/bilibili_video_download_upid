@@ -14,6 +14,9 @@ from moviepy.editor import *
 import os, sys, threading
 import ctypes
 import platform
+import zipfile, os
+import math
+import tarfile
 
 
 class BV_AV():
@@ -205,3 +208,78 @@ def get_free_space_mb(folder):
   else:
     st = os.statvfs(folder)
     return st.f_bavail * st.f_frsize/1024/1024/1024
+
+
+
+
+
+def tarDir(output_filename, source_dir):
+    """
+    一次性打包目录为tar.gz
+    :param output_filename: 压缩文件名
+    :param source_dir: 需要打包的目录
+    :return: bool
+    """
+    try:
+        with tarfile.open(output_filename, "w:gz") as tar:
+            tar.add(source_dir, arcname=os.path.basename(source_dir))
+
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+
+def zip_file(source_file, outputfile_path=None, block_size=100):
+    """
+    @para:source_file:源压缩文件夹的绝对路径
+    @para:outputfile_path:压缩后的目录，
+    @para:block_size:单位为Mbits,默认100Mbits
+    @return:list，由压缩目录+f[i].zip组成的列表, i为分包数目
+    """
+    # 判断outputfile_path是否存在，不存在，则创建：
+    if outputfile_path == None:
+        outputfile_path = source_file + "_zip"
+    if not os.path.exists(outputfile_path):
+        os.mkdir(outputfile_path)
+    size_Mbit=block_size*1024*1024
+    file_size_temp=0
+    count=1
+    for dir_path, dir_name, file_names in os.walk(source_file):
+        # 要是不replace，就从根目录开始复制
+        file_path = dir_path.replace(source_file, "")
+        # 实现当前文件夹以及包含的所有文件
+        file_path = file_path and file_path + os.sep or ''
+        for file_name in file_names:
+            file_size_temp += os.path.getsize(os.path.join(dir_path, file_name))
+    count_sum= math.ceil(file_size_temp /size_Mbit)
+    print("大小为%sMbits, 分包数量为%s" % (file_size_temp /(1024*1024), count_sum))
+
+    try:
+        path_list=[]
+        createVar = locals()
+        for i in range(1,(count_sum+1)):
+            zip="f"+str(i)+".zip"
+            path_list.append(os.path.join(outputfile_path,zip))
+            createVar['f'+ str(i)] = zipfile.ZipFile(os.path.join(outputfile_path,zip), 'w', zipfile.ZIP_DEFLATED)
+        count=1
+        file_size_temp=0
+        for dir_path, dir_name, file_names in os.walk(source_file):
+            # 要是不replace，就从根目录开始复制
+            file_path = dir_path.replace(source_file, "")
+            # 实现当前文件夹以及包含的所有文件
+            file_path = file_path and file_path + os.sep or ''
+            for file_name in file_names:
+                file_size_temp += os.path.getsize(os.path.join(dir_path, file_name))
+                if file_size_temp > size_Mbit:
+                    count= count+1
+                    file_size_temp=0
+                createVar['f'+ str(count)].write(os.path.join(dir_path, file_name), file_path + file_name)
+        for i in range(1,(count_sum+1)):
+            createVar['f'+ str(i)].close()
+        return path_list
+    finally:
+        for i in range(1,(count_sum+1)):
+            createVar['f'+ str(i)].close()
+
+# print(zip_file(r"bili_results/1454389809",r"bili_results/1454389809_zip", block_size=2000))

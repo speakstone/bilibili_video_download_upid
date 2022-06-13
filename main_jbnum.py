@@ -14,21 +14,7 @@ from utils import *
 from tools import *
 from upid_get_and_up import *
 
-def tarDir(output_filename, source_dir):
-    """
-    一次性打包目录为tar.gz
-    :param output_filename: 压缩文件名
-    :param source_dir: 需要打包的目录
-    :return: bool
-    """
-    try:
-        with tarfile.open(output_filename, "w:gz") as tar:
-            tar.add(source_dir, arcname=os.path.basename(source_dir))
 
-        return True
-    except Exception as e:
-        print(e)
-        return False
 
 
 class bilidowload_upid():
@@ -133,7 +119,7 @@ class bilidowload_upid():
                     print("download {} failed".format(avid))
                 # print(data)
             if not last_page:
-                tarDir(os.path.join(self.save_path, str(usid)) + '.tar.gz', self.save_path)
+                zip_file(self.save_path)
                 break
 
 
@@ -186,7 +172,7 @@ def download_with_jbnum(save_path, quality, usid):
 if __name__ == "__main__":
     save_path = "bili_results/"
     # 1080p:80;720p:64;480p:32;360p:16
-    quality = 32
+    quality = 16
     usid = input('请输入您的工号:')
     while True:
         statue = download_with_jbnum(save_path, quality, usid)
