@@ -117,7 +117,6 @@ class bilidowload_upid():
         self.params['mid'] = usid
         self.heards['referer'] = 'https://space.bilibili.com/{}/video'.format(usid)
         while True:
-
             last_page = self.getUpAllBvide()
             vids = [[i["aid"], i["bvid"]] for i in self.tasks]
             for index, vid in enumerate(vids):
