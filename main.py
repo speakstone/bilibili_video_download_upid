@@ -129,7 +129,7 @@ class bilidowload_upid():
                     print("download {} failed".format(avid))
                 print(data)
             if not last_page:
-                tarDir(os.path.join(self.save_path, str(usid)) + '.tar.gz', self.save_path)
+                # tarDir(os.path.join(self.save_path, str(usid)) + '.tar.gz', self.save_path)
                 break
 
 

@@ -259,7 +259,7 @@ def zip_file(source_file, outputfile_path=None, block_size=100):
         path_list=[]
         createVar = locals()
         for i in range(1,(count_sum+1)):
-            zip="f"+str(i)+".zip"
+            zip= os.path.split(source_file)[-1] + "_" + str(i) +".zip"
             path_list.append(os.path.join(outputfile_path,zip))
             createVar['f'+ str(i)] = zipfile.ZipFile(os.path.join(outputfile_path,zip), 'w', zipfile.ZIP_DEFLATED)
         count=1
@@ -282,4 +282,5 @@ def zip_file(source_file, outputfile_path=None, block_size=100):
         for i in range(1,(count_sum+1)):
             createVar['f'+ str(i)].close()
 
-# print(zip_file(r"bili_results/1454389809",r"bili_results/1454389809_zip", block_size=2000))
+# print(zip_file(r"/home/data/bili_results/13087547", block_size=2000))
+# print(get_free_space_mb("/home/data"))

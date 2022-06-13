@@ -117,10 +117,16 @@ class bilidowload_upid():
                     time.sleep(random.random() + random.randint(1, 3))
                 except:
                     print("download {} failed".format(avid))
+                # 剩余大小判断，小于5G停下
+                capacity = get_free_space_mb(self.save_path)
+                if capacity < 5:
+                    print("------剩余空间告急，小于5G，请及时传输数据和清理磁盘--------")
+                    return False
+
                 # print(data)
             if not last_page:
                 zip_file(self.save_path)
-                break
+                return True
 
 
 def download_with_jbnum(save_path, quality, usid):
@@ -155,13 +161,15 @@ def download_with_jbnum(save_path, quality, usid):
         nid = up_main.get_new_id()
         state = 0
     if not nid:
-        "库里没有数据了"
+        print("-----库里没有数据了------")
         return False
     # J记录状态
     with open("state.txt", "w", encoding="utf-8") as f:
         f.write(",".join([str(nid), str(state)]))
     # 下载主函数
-    main.download_usid(str(nid))
+    end = main.download_usid(str(nid))
+    if not end:
+        return False
     with open("state.txt", "w", encoding="utf-8") as f:
         f.write(",".join([str(nid), str(1)]))
     # 更新服务器状态
