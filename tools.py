@@ -230,7 +230,7 @@ def tarDir(output_filename, source_dir):
         return False
 
 
-def zip_file(source_file, outputfile_path=None, block_size=100):
+def zip_file(source_file, outputfile_path=None, block_size=5000):
     """
     @para:source_file:源压缩文件夹的绝对路径
     @para:outputfile_path:压缩后的目录，

@@ -125,7 +125,7 @@ class bilidowload_upid():
 
                 # print(data)
             if not last_page:
-                # zip_file(self.save_path)
+                zip_file(os.path.join(self.save_path,usid))
                 return True
 
 

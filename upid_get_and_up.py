@@ -59,8 +59,6 @@ def get_up_with_keyword(keyword):
 
 
 
-
-
 if __name__ == "__main__":
     # a = up_id_get("X6024")
     # new_id = a.get_new_id()

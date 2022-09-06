@@ -139,7 +139,7 @@ if __name__ == "__main__":
     quality = 32
     main = bilidowload_upid(save_path, quality)
     # 添加up主id list
-    usid_list = [98627270]
+    usid_list = [326499679]
     if len(usid_list) == 0:
         usid = input('请输入您要下载的B站up猪的id:')
         main.download_usid(str(usid))

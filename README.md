@@ -13,3 +13,6 @@ pyton3
 import imageio
 imageio.plugins.ffmpeg.download()
 
+# 新增按照工号执行
+python3 main_jbnum.py
+
