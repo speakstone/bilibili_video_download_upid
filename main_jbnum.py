@@ -14,14 +14,10 @@ from utils import *
 from tools import *
 from upid_get_and_up import *
 
-
-
-
 class bilidowload_upid():
     """
     根据up猪id进行批量下载
     """
-
     def __init__(self,save_path = "bili_results/", quality = 32):
         self.save_path = save_path  # 视频下载存放位置
         if not os.path.isdir(self.save_path):
@@ -43,7 +39,6 @@ class bilidowload_upid():
                        'sec-fetch-site': 'same-site',
                        'user-agent': ""}
 
-
         self.params = {'mid': "",
                        'pn': 1,
                        'ps': 30,
@@ -53,7 +48,6 @@ class bilidowload_upid():
                        'jsonp': 'jsonp'}
 
         self.url = 'https://api.bilibili.com/x/space/arc/search'
-
         self.bilitools = tools()
 
     def getUpAllBvide(self):
@@ -122,12 +116,10 @@ class bilidowload_upid():
                 if capacity < 5:
                     print("------剩余空间告急，小于5G，请及时传输数据和清理磁盘--------")
                     return False
-
                 # print(data)
             if not last_page:
-                zip_file(os.path.join(self.save_path,usid))
+                # zip_file(os.path.join(self.save_path,usid))
                 return True
-
 
 def download_with_jbnum(save_path, quality, usid):
     """
@@ -178,15 +170,13 @@ def download_with_jbnum(save_path, quality, usid):
 
 
 if __name__ == "__main__":
-    save_path = "bili_results/"
+    save_path = "/home/data/bilibili/bili_results/bili_results"
     # 1080p:80;720p:64;480p:32;360p:16
-    quality = 16
+    quality = 64
+    # usid = "X6024"
     usid = input('请输入您的工号:')
     while True:
         statue = download_with_jbnum(save_path, quality, usid)
         if not statue:
             break
-
-
-
 

@@ -10,6 +10,8 @@
 @desc:
 '''
 import tarfile
+import pickle
+import multiprocessing
 from utils import *
 from tools import *
 from upid_get_and_up import *
@@ -18,12 +20,12 @@ class bilidowload_upid():
     """
     根据up猪id进行批量下载
     """
-
-    def __init__(self,save_path = "bili_results/", quality = 32):
+    def __init__(self,save_path = "bili_results/", quality = 32, thread_count=2):
         self.save_path = save_path  # 视频下载存放位置
         if not os.path.isdir(self.save_path):
             os.mkdir(self.save_path)
         self.tasks = []
+        self.process = thread_count
         self.quality = quality  # 1080p:80;720p:64;480p:32;360p:16
         self.heards = {'accept': 'application/json, text/plain, */*',
                        'accept-encoding': 'utf-8',
@@ -67,24 +69,28 @@ class bilidowload_upid():
 
     def download_cid(self, cid_list):
         start_time = time.time()
+        save_dir = os.path.join(self.save_path, self.params['mid'])
+        if not os.path.isdir(save_dir):
+            os.mkdir(save_dir)
         # 创建线程池
         title_list = []
         for item in cid_list:
-            try:
-                cid = str(item['cid'])
-                title = item['part']
-                title = re.sub(r'[\/\\:*?"<>|]', '', title)  # 替换为空的
-                title_list.append(title)
-                page = str(item['page'])
-                start_url = self.start_url + "/?p=" + page
-                video_list = get_play_list(start_url, cid, self.quality)
-                start_time = time.time()
-                save_dir = os.path.join(self.save_path, self.params['mid'])
-                if not os.path.isdir(save_dir):
-                    os.mkdir(save_dir)
-                self.bilitools.down_video(video_list, title, start_url, page, save_dir)
-            except:
-                continue
+            cid = str(item['cid'])
+            # print("cid", cid)
+            title = item['part']
+            title = re.sub(r'[\/\\:*?"<>|]', '', title)  # 替换为空的
+            title = str(cid) + "_" + title
+            title_list.append(title)
+            page = str(item['page'])
+            start_url = self.start_url + "/?p=" + page
+            video_list = get_play_list(start_url, cid, self.quality)
+            start_time = time.time()
+            # title_list.append([video_list, title, start_url, page, save_dir])
+            self.bilitools.down_video(video_list, title, start_url, page, save_dir)
+        # 最后合并视频
+        # print(title_list)
+        # self.bilitools.combine_video(title_list, save_dir)
+
         end_time = time.time()  # 结束时间
         print('下载总耗时%.2f秒,约%.2f分钟' % (end_time - start_time, int(end_time - start_time) / 60))
 
@@ -94,35 +100,65 @@ class bilidowload_upid():
         :param usid:
         :return:
         """
+        # 剩余磁盘大小判断，小于5G停下
+        capacity = get_free_space_mb(self.save_path)
+        if capacity < 5:
+            print("------剩余空间告急，小于5G，请及时传输数据和清理磁盘--------")
+            return False
+
         self.heards['user-agent'] = get_random_agent()
         self.params['mid'] = usid
         self.heards['referer'] = 'https://space.bilibili.com/{}/video'.format(usid)
-        while True:
-            last_page = self.getUpAllBvide()
-            vids = [[i["aid"], i["bvid"]] for i in self.tasks]
-            for index, vid in enumerate(vids):
-                print(index, "--------", vid)
-                try:
-                    self.bilitools = tools()
-                    avid = vid[0]
-                    self.start_url = 'https://api.bilibili.com/x/web-interface/view?aid={}'.format(avid)
-                    html = requests.get(self.start_url, headers={'User-Agent':  get_random_agent()}).json()
-                    data = html['data']['pages']
-                    self.download_cid(data)
-                    time.sleep(random.random() + random.randint(1, 3))
-                except:
-                    print("download {} failed".format(avid))
-                # 剩余大小判断，小于5G停下
-                capacity = get_free_space_mb(self.save_path)
-                if capacity < 5:
-                    print("------剩余空间告急，小于5G，请及时传输数据和清理磁盘--------")
-                    return False
-                # print(data)
-            if not last_page:
-                # zip_file(os.path.join(self.save_path,usid))
-                return True
+        if os.path.isfile("data_dict.pkl"):
+            with open("data_dict.pkl", 'rb') as f:
+                data_dict = pickle.load(f)
+        else:
+            data_dict = {}
+            while True:
+                # 循环翻页补货所有页面的vid
+                next_page = self.getUpAllBvide()
+                vids = [[i["aid"], i["bvid"]] for i in self.tasks]
+                for index, vid in enumerate(vids):
+                    print(index, "--------", vid)
+                    try:
+                        self.bilitools = tools()
+                        avid = vid[0]
+                        self.start_url = 'https://api.bilibili.com/x/web-interface/view?aid={}'.format(avid)
+                        html = requests.get(self.start_url, headers={'User-Agent':  get_random_agent()}).json()
+                        data = html['data']['pages']
+                        data_dict[avid] = data
+                        # self.download_cid(data)
+                        time.sleep(random.random() + random.randint(1, 4))
+                    except:
+                        print("get vid data {} failed".format(vid[0]))
+                    # break
+                if not next_page:
+                    break
+            # 保存缓存文件dict
+            with open("data_dict.pkl", 'wb') as f:
+                pickle.dump(data_dict, f, pickle.HIGHEST_PROTOCOL)
+        print("总共获取到{}个视频，准备下载".format(len(data_dict)))
+        # 开始下载所有vid
+        data_list = []
+        for data in data_dict.values():
+            # self.download_cid(data)
+            p = multiprocessing.Process(target=self.download_cid, args=(data,))
+            data_list.append(p)
+            if len(data_list) % self.process == 0 and len(data_list) > 0:
+                [x.start() for x in data_list]
+                [p.join() for p in data_list]
+                data_list = []
+                time.sleep(random.random() + random.randint(10, 20))
+        # 如果存在余量没有下载完
+        if len(data_list) > 0:
+            [x.start() for x in data_list]
+            [p.join() for p in data_list]
+        # 删除缓存文件
+        os.remove("data_dict.pkl")
+        # zip_file(os.path.join(self.save_path,usid))
+        return True
 
-def download_with_jbnum(save_path, quality, usid):
+def download_with_jbnum(save_path, quality, usid, thread_count):
     """
     根据工号下载
     :param save_path:
@@ -131,7 +167,7 @@ def download_with_jbnum(save_path, quality, usid):
     :return:
     """
     # 创建视频下载类
-    main = bilidowload_upid(save_path, quality)
+    main = bilidowload_upid(save_path, quality, thread_count)
     # 创建id获取类
     up_main = up_id_get(usid)
     # 本地初始化校验
@@ -171,13 +207,15 @@ def download_with_jbnum(save_path, quality, usid):
 
 
 if __name__ == "__main__":
-    save_path = "/home/data/bilibili/bili_results/bili_results"
+    save_path = "../bili_results"
+    # save_path = "bili_results"
     # 1080p:80;720p:64;480p:32;360p:16
-    quality = 64
+    quality = 64 #
+    thread_count = 4 #进程数
     usid = "X6024"
     # usid = input('请输入您的工号:')
     while True:
-        statue = download_with_jbnum(save_path, quality, usid)
+        statue = download_with_jbnum(save_path, quality, usid, thread_count)
         if not statue:
             break
 

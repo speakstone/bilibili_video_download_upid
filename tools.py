@@ -11,6 +11,7 @@
 '''
 import requests, time, hashlib, urllib.request, re, json
 from moviepy.editor import *
+from utils import get_random_agent
 import os, sys, threading
 import ctypes
 import platform
@@ -44,19 +45,22 @@ class BV_AV():
 
 # 访问API地址
 def get_play_list(start_url, cid, quality):
-    entropy = 'rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg'
-    appkey, sec = ''.join([chr(ord(i) + 2) for i in entropy[::-1]]).split(':')
-    params = 'appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type=' % (appkey, cid, quality, quality)
-    chksum = hashlib.md5(bytes(params + sec, 'utf8')).hexdigest()
-    url_api = 'https://interface.bilibili.com/v2/playurl?%s&sign=%s' % (params, chksum)
-    headers = {
-        'Referer': start_url,  # 注意加上referer
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
-    }
-    html = requests.get(url_api, headers=headers).json()
-    video_list = []
-    for i in html['durl']:
-        video_list.append(i['url'])
+    try:
+        entropy = 'rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg'
+        appkey, sec = ''.join([chr(ord(i) + 2) for i in entropy[::-1]]).split(':')
+        params = 'appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type=' % (appkey, cid, quality, quality)
+        chksum = hashlib.md5(bytes(params + sec, 'utf8')).hexdigest()
+        url_api = 'https://interface.bilibili.com/v2/playurl?%s&sign=%s' % (params, chksum)
+        headers = {
+            'Referer': start_url,  # 注意加上referer
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
+        }
+        html = requests.get(url_api, headers=headers).json()
+        video_list = []
+        for i in html['durl']:
+            video_list.append(i['url'])
+    except:
+        return []
     return video_list
 
 
@@ -127,21 +131,21 @@ class tools():
 
 
     #  下载视频
-    def down_video(self,video_list, title, start_url, page, save_path):
+    def down_video(self, video_list, title, start_url, page, save_path):
         num = 1
         print('[正在下载P{}段视频,请稍等...]:'.format(page) + title)
         currentVideoPath = os.path.join(save_path, title)  # 当前目录作为下载目录
         if not os.path.exists(currentVideoPath):
             os.makedirs(currentVideoPath)
-        else:
-            print('文件夹{}已经存在，跳过此视频下载'.format(currentVideoPath))
-            return False
+        elif len(os.listdir(currentVideoPath)) > 0:
+            print('文件{}已经存在，跳过此视频下载'.format(currentVideoPath))
+            return
         for i in video_list:
             opener = urllib.request.build_opener()
             # 请求头
             opener.addheaders = [
                 # ('Host', 'upos-hz-mirrorks3.acgvideo.com'),  #注意修改host,不用也行
-                ('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:56.0) Gecko/20100101 Firefox/56.0'),
+                ('User-Agent', get_random_agent()),
                 ('Accept', '*/*'),
                 ('Accept-Language', 'en-US,en;q=0.5'),
                 ('Accept-Encoding', 'gzip, deflate, br'),
@@ -156,21 +160,28 @@ class tools():
                 os.makedirs(currentVideoPath)
             # 开始下载
             try:
+                # if len(video_list) > 1:
+                #     urllib.request.urlretrieve(url=i, filename=os.path.join(currentVideoPath, r'{}-{}.flv'.format(title, num)),
+                #                                reporthook=self.Schedule_cmd)  # 写成mp4也行  title + '-' + num + '.flv'
+                # else:
+                #     urllib.request.urlretrieve(url=i, filename=os.path.join(currentVideoPath, r'{}.flv'.format(title)),
+                #                                reporthook=self.Schedule_cmd)  # 写成mp4也行  title + '-' + num + '.flv'
                 if len(video_list) > 1:
-                    urllib.request.urlretrieve(url=i, filename=os.path.join(currentVideoPath, r'{}-{}.flv'.format(title, num)),
-                                               reporthook=self.Schedule_cmd)  # 写成mp4也行  title + '-' + num + '.flv'
+                    urllib.request.urlretrieve(url=i, filename=os.path.join(currentVideoPath,
+                                                r'{}-{}.flv'.format(title, num))
+                                               )  # 写成mp4也行  title + '-' + num + '.flv'
                 else:
-                    urllib.request.urlretrieve(url=i, filename=os.path.join(currentVideoPath, r'{}.flv'.format(title)),
-                                               reporthook=self.Schedule_cmd)  # 写成mp4也行  title + '-' + num + '.flv'
+                    urllib.request.urlretrieve(url=i, filename=os.path.join(currentVideoPath,
+                                                r'{}.flv'.format(title))
+                                               )  # 写成mp4也行  title + '-' + num + '.flv'
                 num += 1
             except:
                 continue
 
 
-
     # 合并视频(20190802新版)
-    def combine_video(self, title_list):
-        video_path = os.path.join(sys.path[0], 'bilibili_video')  # 下载目录
+    def combine_video(self, title_list, video_path):
+        # video_path = os.path.join(sys.path[0], 'bilibili_video')  # 下载目录
         for title in title_list:
             current_video_path = os.path.join(video_path ,title)
             if len(os.listdir(current_video_path)) >= 2:
