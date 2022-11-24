@@ -22,7 +22,7 @@ class up_id_get():
     """
     def __init__(self, id):
         self.id = id.replace("x", "X").strip()
-        self.url = 'http://120.48.51.8:11000/center/add?name={}'.format(self.id)
+        self.url = 'http://119.91.213.180:11000/center/add?name={}'.format(self.id)
 
     def get_new_id(self):
         url_a = urllib.request.urlopen(self.url)  # 打开网址
@@ -33,7 +33,7 @@ class up_id_get():
         return False
 
     def up_id_statu(self, upid):
-        self.done_url = 'http://120.48.51.8:11000/center/done?name={}'.format(upid)
+        self.done_url = 'http://119.91.213.180:11000/center/done?name={}'.format(upid)
         urllib.request.urlopen(self.done_url)  # 打开网址
 
 
