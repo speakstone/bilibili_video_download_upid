@@ -212,8 +212,8 @@ if __name__ == "__main__":
     # 1080p:80;720p:64;480p:32;360p:16
     quality = 64 #
     thread_count = 4 #进程数
-    usid = "X6024"
-    # usid = input('请输入您的工号:')
+    # usid = "X6024"
+    usid = input('请输入您的工号:')
     while True:
         statue = download_with_jbnum(save_path, quality, usid, thread_count)
         if not statue:
