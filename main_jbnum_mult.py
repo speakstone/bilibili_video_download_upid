@@ -211,7 +211,7 @@ if __name__ == "__main__":
     # save_path = "bili_results"
     # 1080p:80;720p:64;480p:32;360p:16
     quality = 64 #
-    thread_count = 4 #进程数
+    thread_count = 2 #进程数
     # usid = "X6024"
     usid = input('请输入您的工号:')
     while True:
