@@ -10,7 +10,7 @@ quality = 32 # 1080p:80;720p:64;480p:32;360p:16 分辨率
 usid_list = [*] # 添加id list, *代表up猪的id
 thread_count = 4 # 进程数
 # ubuntu，macos运行，请提前配置ffmpeg
-pyton3
+python3
 import imageio
 imageio.plugins.ffmpeg.download()
 
