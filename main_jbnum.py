@@ -170,7 +170,7 @@ def download_with_jbnum(save_path, quality, usid):
 
 
 if __name__ == "__main__":
-    save_path = "/home/data/bilibili/bili_results/bili_results"
+    save_path = "../bili_results"
     # 1080p:80;720p:64;480p:32;360p:16
     quality = 64
     # usid = "X6024"
