@@ -109,34 +109,29 @@ class bilidowload_upid():
         self.heards['user-agent'] = get_random_agent()
         self.params['mid'] = usid
         self.heards['referer'] = 'https://space.bilibili.com/{}/video'.format(usid)
-        if os.path.isfile("data_dict.pkl"):
-            with open("data_dict.pkl", 'rb') as f:
-                data_dict = pickle.load(f)
-        else:
-            data_dict = {}
-            while True:
-                # 循环翻页补货所有页面的vid
-                next_page = self.getUpAllBvide()
-                vids = [[i["aid"], i["bvid"]] for i in self.tasks]
-                for index, vid in enumerate(vids):
-                    print(index, "--------", vid)
-                    try:
-                        self.bilitools = tools()
-                        avid = vid[0]
-                        self.start_url = 'https://api.bilibili.com/x/web-interface/view?aid={}'.format(avid)
-                        html = requests.get(self.start_url, headers={'User-Agent':  get_random_agent()}).json()
-                        data = html['data']['pages']
-                        data_dict[avid] = data
-                        # self.download_cid(data)
-                        time.sleep(random.random() + random.randint(1, 4))
-                    except:
-                        print("get vid data {} failed".format(vid[0]))
-                    # break
-                if not next_page:
-                    break
-            # 保存缓存文件dict
-            with open("data_dict.pkl", 'wb') as f:
-                pickle.dump(data_dict, f, pickle.HIGHEST_PROTOCOL)
+
+        data_dict = {}
+        while True:
+            # 循环翻页补货所有页面的vid
+            next_page = self.getUpAllBvide()
+            vids = [[i["aid"], i["bvid"]] for i in self.tasks]
+            for index, vid in enumerate(vids):
+                print(index, "--------", vid)
+                try:
+                    self.bilitools = tools()
+                    avid = vid[0]
+                    self.start_url = 'https://api.bilibili.com/x/web-interface/view?aid={}'.format(avid)
+                    html = requests.get(self.start_url, headers={'User-Agent':  get_random_agent()}).json()
+                    data = html['data']['pages']
+                    data_dict[avid] = data
+                    # self.download_cid(data)
+                    time.sleep(random.random() + random.randint(1, 4))
+                except:
+                    print("get vid data {} failed".format(vid[0]))
+                # break
+            if not next_page:
+                break
+
         print("总共获取到{}个视频，准备下载".format(len(data_dict)))
         # 开始下载所有vid
         data_list = []
